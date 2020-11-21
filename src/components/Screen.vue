@@ -5,13 +5,13 @@
       <DateTime/>
     </header>
     <main>
-      <HomeScreen/>
+      <component :is="this.activeComponent"/>
     </main>
     <nav>
       <ul>
-        <li>Home</li>
-        <li>Intercom</li>
-        <li>Messages</li>
+        <li @click="setScreen('home')">Home</li>
+        <li @click="setScreen('intercom')">Intercom</li>
+        <li @click="setScreen('messages')">Messages</li>
       </ul>
     </nav>
   </div>
@@ -21,10 +21,31 @@
 import UserStatus from "@/components/UserStatus";
 import DateTime from "@/components/DateTime";
 import HomeScreen from "@/components/home/HomeScreen";
+import IntercomScreen from "@/components/intercom/IntercomScreen";
 
 export default {
   name: "Screen",
-  components: {HomeScreen, DateTime, UserStatus}
+  components: {HomeScreen, IntercomScreen, DateTime, UserStatus},
+  data() {
+    return {
+      screens: {
+        home: "HomeScreen",
+        intercom: "IntercomScreen",
+        messages: "HomeScreen"
+      },
+      activeScreen: "home"
+    }
+  },
+  computed: {
+    activeComponent: function() {
+      return this.screens[this.activeScreen];
+    }
+  },
+  methods: {
+    setScreen: function (screen) {
+      this.activeScreen = screen;
+    }
+  }
 }
 </script>
 
@@ -34,10 +55,12 @@ body, html {
   top: 0;
   left: 0;
   height: 100%;
+  user-select: none;
 }
 
 header {
   display: flex;
+  height: 4em;
 }
 
 header > div {

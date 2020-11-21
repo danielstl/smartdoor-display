@@ -1,6 +1,6 @@
 <template>
   <div id="user-root">
-    <img src="" width="100"/>
+    <img id="user-icon" src="https://thispersondoesnotexist.com/image"/>
     <div>
       <div id="user-name">Daniel Stoliar</div>
       <div id="user-status">
@@ -19,10 +19,21 @@ export default {
 <style scoped>
 #user-root {
   display: flex;
-  flex-direction: column;
+  flex-flow: row;
 }
 
-#user-root > * {
+#user-root > div {
+  display: flex;
+  flex-flow: column;
+  align-self: center;
   flex: 1;
+}
+
+#user-icon {
+  width: 4em;
+  height: 4em;
+  align-self: center;
+  margin-right: 0.6em;
+  border-radius: 50%;
 }
 </style>

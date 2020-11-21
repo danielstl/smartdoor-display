@@ -26,6 +26,10 @@ export default {
 
 
       }, 1000 * 1);
+
+    document.getElementById("time").onclick = () => {
+      document.documentElement.requestFullscreen();
+    };
   }
 }
 </script>

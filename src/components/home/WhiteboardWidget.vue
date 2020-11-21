@@ -1,8 +1,8 @@
 <template>
   <div class="widget-base whiteboard-base">
     <div id="whiteboard-title">Draw a quick message...</div>
-    <canvas id="whiteboard" v-on:mousemove.prevent="moveDraw" v-on:mouseup.prevent="stopDraw"
-            v-on:mouseenter.prevent="draw" v-on:mousedown.prevent="draw"/>
+    <canvas id="whiteboard" @touchmove.prevent="moveDraw" @mousemove.prevent="moveDraw" @touchend.prevent="stopDraw" @mouseup.prevent="stopDraw"
+            @touchstart.prevent="draw" @mouseenter.prevent="draw" @mousedown.prevent="draw"/>
   </div>
 </template>
 
@@ -38,10 +38,12 @@ export default {
   },
   methods: {
     draw: function (e) { //setPosition
-      this.pos = [e.clientX - this.canvas.offsetLeft, e.clientY - this.canvas.offsetTop];
+      //alert("draw " + JSON.stringify(e));
+      this.pos = [(e.touches ? e.touches[0].clientX : e.clientX) - this.canvas.offsetLeft, (e.touches ? e.touches[0].clientY : e.clientY) - this.canvas.offsetTop];
     },
     moveDraw: function (e) { //draw
-      if (e.buttons !== 1) return;
+      //alert("move" + JSON.stringify(e));
+      if (e.buttons && e.buttons !== 1) return;
 
       let ctx = this.context;
 
@@ -59,6 +61,9 @@ export default {
     },
     stopDraw: function () {
       //alert("yo");
+    },
+    drawaa: function (e) {
+      alert("AA " + JSON.stringify(e.touches[0].clientX));
     }
   }
 }

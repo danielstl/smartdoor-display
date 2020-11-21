@@ -18,7 +18,7 @@ export default {
 <style scoped>
 #pinned-messages {
   overflow-y: scroll;
-  max-height: 600px; /*todo fix this*/
+  max-height: 590px; /*todo fix this*/
 }
 
 ::-webkit-scrollbar {
