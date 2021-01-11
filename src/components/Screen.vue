@@ -27,16 +27,17 @@ import UserStatus from "@/components/UserStatus";
 import DateTime from "@/components/DateTime";
 import HomeScreen from "@/components/home/HomeScreen";
 import IntercomScreen from "@/components/intercom/IntercomScreen";
+import MessagingScreen from "@/components/messaging/MessagingScreen";
 
 export default {
   name: "Screen",
-  components: {HomeScreen, IntercomScreen, DateTime, UserStatus},
+  components: {HomeScreen, IntercomScreen, MessagingScreen, DateTime, UserStatus},
   data() {
     return {
       screens: {
         home: "HomeScreen",
         intercom: "IntercomScreen",
-        messages: "HomeScreen"
+        messages: "MessagingScreen"
       },
       activeScreen: "home",
       backgroundUrl: null
@@ -110,13 +111,12 @@ nav > ul > li > span {
   font-family: "Roboto", "Segoe UI", "sans-serif";
   display: flex;
   flex-flow: column;
-  height: 100%;
+  height: 100vh;
   box-sizing: border-box;
 
   background-repeat: no-repeat;
   background-size: cover;
 
-  overflow: auto;
   max-height: 100vh;
 }
 
@@ -127,6 +127,8 @@ nav > ul > li > span {
 
 main {
   flex: 1;
+
+  overflow: auto;
 }
 
 nav {
@@ -137,5 +139,17 @@ nav {
   border-top: 3px solid #6c6cff;
   transform: scale(1.8, 1.8);
   color: white;
+}
+
+.widget-base {
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 2px 8px;
+  margin: 0.3em;
+  background-color: white;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
 }
 </style>

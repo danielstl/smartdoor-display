@@ -1,5 +1,5 @@
 <template>
-  <div class="widget-base">
+  <div class="widget-base" id="schedule-widget">
     <ul>
       <li class="schedule-day" v-for="day in schedule" :key="day.day">
         <div class="day-text">
@@ -140,5 +140,9 @@ ul {
 
 .event-title {
   font-weight: 600;
+}
+
+#schedule-widget {
+  overflow-y: scroll;
 }
 </style>

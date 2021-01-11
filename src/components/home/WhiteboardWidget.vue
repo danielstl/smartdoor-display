@@ -101,6 +101,7 @@ export default {
 .whiteboard-base {
   display: flex;
   flex-flow: column;
+  overflow-y: scroll;
 }
 
 #whiteboard-title {

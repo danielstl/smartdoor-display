@@ -33,7 +33,7 @@ export default {
       const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
       const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-      this.time = (now.getHours() < 10 ? "0" : "") + now.getHours() + ":" + now.getMinutes();
+      this.time = (now.getHours() < 10 ? "0" : "") + now.getHours() + ":" + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes();
       this.date = weekdays[now.getDay()] + " " + now.getDate() + " " + months[now.getMonth()];
     }
   }
