@@ -2,17 +2,60 @@
   <div id="user-root">
     <img id="user-icon" src="https://thispersondoesnotexist.com/image"/>
     <div>
-      <div id="user-name">Daniel Stoliar</div>
+      <div id="user-name">{{ this.name }}</div>
       <div id="user-status">
-        <img/><span>Available</span>
+        <svg height="16" width="16">
+          <ellipse cx="8" cy="8" rx="8" ry="8" :style="'fill: ' + this.statusColour"/>
+        </svg>
+        <span>{{ this.statusName }}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+const statusMap = {
+  AVAILABLE: {
+    name: "Available",
+    colour: "green"
+  },
+  DO_NOT_DISTURB: {
+    name: "Do not disturb",
+    colour: "red"
+  },
+  AWAY: {
+    name: "Away",
+    colour: "orange"
+  }
+};
+
 export default {
-  name: "UserStatus"
+  name: "UserStatus",
+  data() {
+    return {
+      name: "",
+      icon: "",
+      status: "AVAILABLE"
+    }
+  },
+  sockets: {
+    user_update: function (res) {
+      this.name = res.name;
+      this.icon = res.icon;
+      this.status = res.status;
+    }
+  },
+  computed: {
+    statusName: function () {
+      return statusMap[this.status].name;
+    },
+    statusColour: function () {
+      return statusMap[this.status].colour;
+    }
+  },
+  mounted() {
+    this.$socket.emit("get_user");
+  }
 }
 </script>
 

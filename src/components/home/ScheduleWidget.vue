@@ -18,61 +18,75 @@
 </template>
 
 <script>
+const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+function mapEpochToTime(epoch) {
+  let date = new Date(0);
+  date.setUTCMilliseconds(epoch);
+
+  return date.getHours() + ":" + (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
+}
+
 export default {
   name: "ScheduleWidget",
   data() {
     return {
-      schedule: [
-        {
-          day: 16,
-          weekday: "Mon",
-          events: [
-            {
-              title: "SCC.311",
-              start: "12:00",
-              end: "13:00"
-            },
-            {
-              title: "SCC.311",
-              start: "15:00",
-              end: "16:00"
-            }
-          ]
-        },
-        {
-          day: 17,
-          weekday: "Tue",
-          events: [
-            {
-              title: "SCC.311",
-              start: "14:00",
-              end: "16:00"
-            }
-          ]
-        },
-        {
-          day: 18,
-          weekday: "Wed",
-          events: [
-            {
-              title: "SCC.306",
-              start: "9:00",
-              end: "11:00"
-            },
-            {
-              title: "SCC.361",
-              start: "12:00",
-              end: "14:00"
-            },
-            {
-              title: "SCC.306",
-              start: "14:00",
-              end: "16:00"
-            }
-          ]
-        }
-      ]
+      schedule: []
     }
+  },
+  sockets: {
+    calendar_update: function (update) {
+      if (update && update.data) {
+        let now = new Date();
+
+        console.log(1, now.getTime());
+
+        now.setHours(0, 0, 0, 0);
+
+        console.log(2, now.getTime());
+
+        let newSchedule = [];
+
+        //next 7 days...
+        for (let i = 0; i < 7; i++) {
+          let startEpoch = now.getTime();
+          let endEpoch = startEpoch + 86400000; //1 day in ms
+
+          console.log("->", now, now.getTime());
+          console.log(startEpoch, endEpoch);
+
+          //filter to only today's events
+          let todaysEvents = update.data.filter(e => /*console.log(e.start, startEpoch) &&*/ e.start >= startEpoch && e.start < endEpoch).map(e => {
+            return {
+              title: e.name,
+              start: mapEpochToTime(e.start),
+              end: mapEpochToTime(e.end)
+            }
+          });
+
+          if (todaysEvents.length > 0) { //if we have events today
+            newSchedule.push(
+                {
+                  day: now.getDate(), //day of month
+                  weekday: weekdays[now.getDay() - 1], //day of week
+                  events: todaysEvents
+                }
+            );
+          }
+
+          now.setDate(now.getDate() + 1); //add 1 day
+        }
+
+        this.schedule = newSchedule;
+
+      } else {
+        this.schedule = [];
+      }
+    }
+  },
+  mounted() {
+    this.$socket.emit("get_calendar");
+    //fetch("http://localhost:3000/schedule", {mode: "no-cors"}).then(r => console.log(r)).then(r => r.json()).then(r => console.log(r));//.then(r => this.schedule = r);
   }
 }
 </script>

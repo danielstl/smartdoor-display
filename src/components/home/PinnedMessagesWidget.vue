@@ -1,8 +1,8 @@
 <template>
 <div id="pinned-messages">
   <PinnedMessage text="hello"/>
-  <PinnedMessage image="https://thispersondoesnotexist.com/image"/>
-  <PinnedMessage image="https://thispersondoesnotexist.com/image"/>
+  <PinnedMessage image="/hello.png"/>
+  <PinnedMessage image="/hello.png"/>
   <PinnedMessage/>
 </div>
 </template>

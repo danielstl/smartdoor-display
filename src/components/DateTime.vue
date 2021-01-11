@@ -10,26 +10,32 @@ export default {
   name: "DateTime",
   data() {
     return {
-      date: "aaa",
-      time: "aaa"
+      date: "",
+      time: ""
     }
   },
   mounted() {
-    window.setInterval(() => {
-      let now = new Date();
+    this.updateTime();
 
-      const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-      this.time = now.getHours() + ":" + now.getMinutes();
-      this.date = weekdays[now.getDay() - 1] + " " + now.getDay() + " " + months[now.getMonth() - 1];
-
-
-      }, 1000 * 1);
+    this.intervalId = window.setInterval(this.updateTime, 1000);
 
     document.getElementById("time").onclick = () => {
       document.documentElement.requestFullscreen();
     };
+  },
+  beforeDestroy() {
+    window.clearInterval(this.intervalId);
+  },
+  methods: {
+    updateTime: function () {
+      let now = new Date();
+
+      const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+      this.time = (now.getHours() < 10 ? "0" : "") + now.getHours() + ":" + now.getMinutes();
+      this.date = weekdays[now.getDay()] + " " + now.getDate() + " " + months[now.getMonth()];
+    }
   }
 }
 </script>

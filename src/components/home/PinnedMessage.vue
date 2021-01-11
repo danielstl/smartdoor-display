@@ -21,8 +21,13 @@ name: "PinnedMessage",
   padding: 0.5em;
 }
 
+.pinned-message {
+  margin-bottom: 0.5em;
+}
+
 img {
   width: 100%;
   object-fit: cover;
+  border-radius: 8px;
 }
 </style>

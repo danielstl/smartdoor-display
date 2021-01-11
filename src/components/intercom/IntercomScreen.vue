@@ -1,14 +1,18 @@
 <template>
   <div>
+    <Modal/>
     <video autoplay="true" id="cam-feed">
 
     </video>
+    <button @click="alert('a')"/>
   </div>
 </template>
 
 <script>
+import Modal from "@/components/Modal";
 export default {
   name: "IntercomScreen",
+  components: {Modal},
   mounted() {
     let camFeed = document.getElementById("cam-feed");
 
