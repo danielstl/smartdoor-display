@@ -21,7 +21,6 @@ export default {
 #widgets {
   display: flex;
   height: 100%;
-  padding: 1em 0;
   box-sizing: border-box;
   max-height: 100%;
 }

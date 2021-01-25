@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="messaging-root">
     <h1>Messaging</h1>
     <div class="widget-base" id="messages-container">
       <ul id="messages">
@@ -33,6 +33,9 @@ export default {
   sockets: {
     new_message: function (messageData) {
       this.messages.push(messageData);
+
+      var box = document.getElementById("messages");
+      box.scrollTop = box.scrollHeight; //scroll to bottom
     },
     clear_messages: function () {
       this.messages = [];
@@ -62,6 +65,16 @@ export default {
   box-sizing: border-box;
   max-height: 100%;
   flex-direction: column;
+  flex: 1;
+  overflow: auto;
+}
+
+#messaging-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  overflow: auto;
 }
 
 ul {
@@ -75,6 +88,8 @@ li:not(:last-child) {
 
 #messages {
   flex: 1;
+
+  overflow: auto;
 }
 
 #message-box {

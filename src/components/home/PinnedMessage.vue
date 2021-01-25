@@ -1,16 +1,15 @@
 <template>
-<div class="pinned-message widget-base">
-<img v-if="this.image" :src="this.image"/>
-  <div v-if="this.text">{{this.text}}</div>
-</div>
+  <div class="pinned-message widget-base">
+    <img v-if="this.note.image" :src="this.note.image"/>
+    <div v-if="this.note.text">{{ this.note.text }}</div>
+  </div>
 </template>
 
 <script>
 export default {
-name: "PinnedMessage",
+  name: "PinnedMessage",
   props: {
-    text: String,
-    image: String
+    note: Object
   }
 }
 </script>

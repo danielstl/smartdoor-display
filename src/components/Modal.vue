@@ -1,16 +1,13 @@
 <template>
   <div v-if="visible" id="modal-overlay">
     <div id="modal">
+
       <div id="modal-content">
-        <div id="temp" style="height: 100%; text-align: center; display: flex; flex-flow: column; align-items: center; justify-content: center;">
-          <img src="https://thispersondoesnotexist.com/image" style="height: 100px; width: 100px; border-radius: 50%;"/>
-          <p style="font-size: 24pt; font-weight: 500;">Do you want to call Daniel?</p>
-        </div>
         <slot></slot>
       </div>
       <div id="modal-buttons">
-        <button class="button negative" @click="visible = false;">Cancel</button>
-        <button class="button positive">OK</button>
+        <button class="button negative" @click="onNegative">Cancel</button>
+        <button class="button positive" @click="onPositive">OK</button>
       </div>
     </div>
   </div>
@@ -22,6 +19,14 @@ export default {
   data() {
     return {
       visible: true
+    }
+  },
+  methods: {
+    onPositive: function() {
+      this.$emit("positive");
+    },
+    onNegative: function() {
+      this.$emit("negative");
     }
   }
 }

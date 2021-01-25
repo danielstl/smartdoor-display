@@ -1,6 +1,7 @@
 <template>
   <div id="root-overlay" :style="{backgroundImage: 'url(' + this.backgroundUrl + ')'}">
-    <div id="root">
+    <RegistrationScreen v-if="requiresRegistration" @room-joined="roomJoined"/>
+    <div id="root" v-else>
       <header>
         <UserStatus/>
         <DateTime/>
@@ -28,10 +29,11 @@ import DateTime from "@/components/DateTime";
 import HomeScreen from "@/components/home/HomeScreen";
 import IntercomScreen from "@/components/intercom/IntercomScreen";
 import MessagingScreen from "@/components/messaging/MessagingScreen";
+import RegistrationScreen from "@/components/registration/RegistrationScreen";
 
 export default {
   name: "Screen",
-  components: {HomeScreen, IntercomScreen, MessagingScreen, DateTime, UserStatus},
+  components: {RegistrationScreen, HomeScreen, IntercomScreen, MessagingScreen, DateTime, UserStatus},
   data() {
     return {
       screens: {
@@ -39,19 +41,21 @@ export default {
         intercom: "IntercomScreen",
         messages: "MessagingScreen"
       },
+      requiresRegistration: true,
+      roomId: null,
       activeScreen: "home",
       backgroundUrl: null
     }
   },
   async mounted() {
-    this.$socket.emit("get_background");
+
     //let screenData = await fetch("http://localhost:3000/fetch-data/user1", {mode: "no-cors"});
 
     //store.data = Object.assign({}, store.data, screenData);
   },
   sockets: {
     background_update: function (url) {
-      this.backgroundUrl = "http://192.168.1.53:3000" + url; //todo temp
+      this.backgroundUrl = url;
       console.log(url);
     }
   },
@@ -63,6 +67,17 @@ export default {
   methods: {
     setScreen: function (screen) {
       this.activeScreen = screen;
+    },
+
+    roomJoined: function (code) {
+      //todo: store in http storage
+
+      this.roomId = code;
+      this.requiresRegistration = false;
+
+      localStorage.roomCode = code; //save the code!
+
+      this.$socket.emit("get_background");
     }
   }
 }
@@ -127,6 +142,7 @@ nav > ul > li > span {
 
 main {
   flex: 1;
+  padding: 1em 0;
 
   overflow: auto;
 }

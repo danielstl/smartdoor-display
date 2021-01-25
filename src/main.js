@@ -7,7 +7,7 @@ Vue.config.productionTip = false;
 
 Vue.use(new VueSocketio({
   debug: true,
-  connection: new SocketIO("http://192.168.1.53:3000")
+  connection: new SocketIO("https://doorlink.xyz")
 }));
 
 new Vue({

@@ -1,5 +1,6 @@
 <template>
   <div class="widget-base" id="schedule-widget">
+    <EventDetailsOverlay v-if="focusedEvent !== null" :event="focusedEvent" @close="showEventDetails(null)"/>
     <ul>
       <li class="schedule-day" v-for="day in schedule" :key="day.day">
         <div class="day-text">
@@ -7,7 +8,7 @@
           <span class="weekday">{{ day.weekday }}</span>
         </div>
         <ul class="day-events">
-          <li v-for="event in day.events" :key="event.title + event.start">
+          <li v-for="event in day.events" :key="event.title + event.start" @click="showEventDetails(event)" :style="{ 'background-color': event.colour}">
             <div class="event-title">{{ event.title }}</div>
             <div class="event-time">{{ event.start + " - " + event.end }}</div>
           </li>
@@ -18,6 +19,7 @@
 </template>
 
 <script>
+import EventDetailsOverlay from "@/components/home/EventDetailsOverlay";
 const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function mapEpochToTime(epoch) {
@@ -29,14 +31,38 @@ function mapEpochToTime(epoch) {
 
 export default {
   name: "ScheduleWidget",
+  components: {EventDetailsOverlay},
   data() {
     return {
-      schedule: []
+      schedule: [],
+      focusedEvent: null
+    }
+  },
+  methods: {
+    showEventDetails(event) {
+      this.focusedEvent = event;
     }
   },
   sockets: {
     calendar_update: function (update) {
-      if (update && update.data) {
+      if (update && update.length > 0) {
+
+        let flatEvents = [];
+
+        console.log("??", update);
+
+        for (let calendar of update) {
+          console.log("!!!!!", calendar);
+          for (let event of calendar.events) {
+            flatEvents.push({
+              colour: calendar.colour,
+              ...event
+            });
+          }
+        }
+
+        console.log(flatEvents);
+
         let now = new Date();
 
         console.log(1, now.getTime());
@@ -56,9 +82,10 @@ export default {
           console.log(startEpoch, endEpoch);
 
           //filter to only today's events
-          let todaysEvents = update.data.filter(e => /*console.log(e.start, startEpoch) &&*/ e.start >= startEpoch && e.start < endEpoch).map(e => {
+          let todaysEvents = flatEvents.filter(e => /*console.log(e.start, startEpoch) &&*/ e.start >= startEpoch && e.start < endEpoch).map(e => {
             return {
               title: e.name,
+              colour: e.colour,
               start: mapEpochToTime(e.start),
               end: mapEpochToTime(e.end)
             }
@@ -127,11 +154,13 @@ export default {
 }
 
 .day-events > li {
-  background-color: #4141ff;
+  --background-color: #4141ff;
   color: white;
   border-radius: 10px;
   padding: 6px;
   margin: 0 0 5px 0;
+
+  cursor: pointer;
 }
 
 ul {

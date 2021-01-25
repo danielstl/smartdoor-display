@@ -1,8 +1,8 @@
 {
-  "short_name": "Smart Door",
-  "name": "Smart Door Display",
-  "start_url": "/index.html",
+  "short_name": "DoorLink",
+  "name": "DoorLink Display",
+  "start_url": "/display/",
   "background_color": "#000000",
   "display": "fullscreen",
-  "theme_color": "#ffff00"
+  "theme_color": "#00ff00"
 }

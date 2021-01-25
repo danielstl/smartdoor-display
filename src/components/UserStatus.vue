@@ -1,13 +1,13 @@
 <template>
   <div id="user-root">
-    <img id="user-icon" src="https://thispersondoesnotexist.com/image"/>
+    <img id="user-icon" :src="this.profileImage"/>
     <div>
       <div id="user-name">{{ this.name }}</div>
       <div id="user-status">
         <svg height="16" width="16">
           <ellipse cx="8" cy="8" rx="8" ry="8" :style="'fill: ' + this.statusColour"/>
         </svg>
-        <span>{{ this.statusName }}</span>
+        <span id="status-text" :style="{'color': this.statusColour}">{{ this.statusName }}</span>
       </div>
     </div>
   </div>
@@ -35,7 +35,8 @@ export default {
     return {
       name: "",
       icon: "",
-      status: "AVAILABLE"
+      status: "AVAILABLE",
+      profileImage: ""
     }
   },
   sockets: {
@@ -43,6 +44,7 @@ export default {
       this.name = res.name;
       this.icon = res.icon;
       this.status = res.status;
+      this.profileImage = res.profileImage;
     }
   },
   computed: {
@@ -63,6 +65,9 @@ export default {
 #user-root {
   display: flex;
   flex-flow: row;
+
+  font-size: 26px;
+  font-weight: 500;
 }
 
 #user-root > div {
@@ -70,13 +75,23 @@ export default {
   flex-flow: column;
   align-self: center;
   flex: 1;
+
+  margin-top: 0.3em;
+}
+
+#status-text {
+  margin-left: 0.2em;
+}
+
+#user-status > svg {
+  margin-bottom: 0.05em;
 }
 
 #user-icon {
-  width: 4em;
-  height: 4em;
+  width: 4rem;
+  height: 4rem;
   align-self: center;
-  margin-right: 0.6em;
+  margin-right: 0.6rem;
   border-radius: 50%;
 }
 </style>
