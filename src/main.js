@@ -10,6 +10,8 @@ Vue.use(new VueSocketio({
   connection: new SocketIO("https://doorlink.xyz")
 }));
 
+Vue.prototype.$global = {};
+
 new Vue({
   render: h => h(Screen),
 }).$mount('#app')

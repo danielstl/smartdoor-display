@@ -1,8 +1,8 @@
 <template>
   <div id="user-root">
-    <img id="user-icon" :src="this.profileImage"/>
+    <img id="user-icon" :src="this.user.profileImage"/>
     <div>
-      <div id="user-name">{{ this.name }}</div>
+      <div id="user-name">{{ this.user.name }}</div>
       <div id="user-status">
         <svg height="16" width="16">
           <ellipse cx="8" cy="8" rx="8" ry="8" :style="'fill: ' + this.statusColour"/>
@@ -33,26 +33,30 @@ export default {
   name: "UserStatus",
   data() {
     return {
-      name: "",
-      icon: "",
-      status: "AVAILABLE",
-      profileImage: ""
+      user: {
+        name: "",
+        icon: "",
+        status: "AVAILABLE",
+        profileImage: ""
+      }
     }
   },
   sockets: {
     user_update: function (res) {
-      this.name = res.name;
-      this.icon = res.icon;
-      this.status = res.status;
-      this.profileImage = res.profileImage;
+      this.user.name = res.name;
+      this.user.icon = res.icon;
+      this.user.status = res.status;
+      this.user.profileImage = res.profileImage;
+
+      this.$global.user = this.user;
     }
   },
   computed: {
     statusName: function () {
-      return statusMap[this.status].name;
+      return statusMap[this.user.status].name;
     },
     statusColour: function () {
-      return statusMap[this.status].colour;
+      return statusMap[this.user.status].colour;
     }
   },
   mounted() {

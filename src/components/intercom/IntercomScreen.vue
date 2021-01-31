@@ -2,8 +2,8 @@
   <div id="intercom-root">
     <Modal v-if="modalVisible" @positive="startCall" @negative="cancelCall">
       <div id="temp" style="height: 100%; text-align: center; display: flex; flex-flow: column; align-items: center; justify-content: center;">
-        <img src="https://thispersondoesnotexist.com/image" style="height: 100px; width: 100px; border-radius: 50%;"/>
-        <p style="font-size: 24pt; font-weight: 500;">Do you want to call Daniel?</p>
+        <img :src="this.$global.user.profileImage" style="height: 100px; width: 100px; border-radius: 50%;"/>
+        <p style="font-size: 24pt; font-weight: 500;">Do you want to call {{ this.$global.user.name }}?</p>
       </div>
     </Modal>
     <h1>Intercom</h1>

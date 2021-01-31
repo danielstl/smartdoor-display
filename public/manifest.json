@@ -4,5 +4,22 @@
   "start_url": "/display/",
   "background_color": "#000000",
   "display": "fullscreen",
-  "theme_color": "#00ff00"
+  "theme_color": "#00ff00",
+  "icons": [
+    {
+      "src": "icons/512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    }
+  ]
 }

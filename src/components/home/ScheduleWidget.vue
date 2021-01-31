@@ -82,11 +82,12 @@ export default {
           console.log(startEpoch, endEpoch);
 
           //filter to only today's events
-          let todaysEvents = flatEvents.filter(e => /*console.log(e.start, startEpoch) &&*/ e.start >= startEpoch && e.start < endEpoch).map(e => {
+          let todaysEvents = flatEvents.filter(e => /*console.log(e.start, startEpoch) &&*/ e.start >= startEpoch && e.start < endEpoch).sort((a, b) => a.start - b.start).map(e => {
             return {
               title: e.name,
               colour: e.colour,
               start: mapEpochToTime(e.start),
+              startEpoch: e.start,
               end: mapEpochToTime(e.end)
             }
           });

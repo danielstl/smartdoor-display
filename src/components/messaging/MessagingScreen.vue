@@ -7,7 +7,7 @@
           <ChatMessage :message="message"/>
         </li>
       </ul>
-      <input id="message-box" autocomplete="off" type="text" @keydown.enter="sendMessage" v-model="currentMessage" placeholder="Type a message...">
+      <input id="message-box" autocomplete="off" type="text" @keydown.enter="sendMessage" :value="this.currentMessage"  @input="m => this.currentMessage = m.target.value" placeholder="Type a message...">
     </div>
   </div>
 </template>
@@ -20,13 +20,7 @@ export default {
   components: {ChatMessage},
   data() {
     return {
-      messages: [
-        {
-          timestamp: 1000,
-          content: "hello",
-          selfMessage: true
-        }
-      ],
+      messages: [],
       currentMessage: ""
     }
   },
@@ -42,15 +36,12 @@ export default {
     }
   },
   methods: {
-    sendMessage(event) {
-      this.$socket.emit("send_message", {
-        timestamp: new Date().getUTCMilliseconds(),
-        content: event ? event.target.value : this.currentMessage,
-        selfMessage: false
-      });
-      if (event) {
-        event.target.value = "";
+    sendMessage() {
+      if (this.currentMessage === "") {
+        return;
       }
+
+      this.$socket.emit("send_message", this.currentMessage);
       this.currentMessage = "";
     }
   }

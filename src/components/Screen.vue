@@ -13,11 +13,12 @@
         <ul>
           <li :class="{'selected-item': this.activeScreen === 'home'}" @click="setScreen('home')"><span
               class="material-icons">home</span></li>
-          <li :class="{'selected-item': this.activeScreen === 'intercom'}" @click="setScreen('intercom')"><span
+          <li :class="{'selected-item': this.activeScreen === 'intercom'}" @click="setScreen('intercom', true)"><span
               class="material-icons">videocam</span></li>
           <li :class="{'selected-item': this.activeScreen === 'messages'}" @click="setScreen('messages')"><span
               class="material-icons">chat</span></li>
         </ul>
+        <Toast v-if="false"/>
       </nav>
     </div>
   </div>
@@ -30,10 +31,12 @@ import HomeScreen from "@/components/home/HomeScreen";
 import IntercomScreen from "@/components/intercom/IntercomScreen";
 import MessagingScreen from "@/components/messaging/MessagingScreen";
 import RegistrationScreen from "@/components/registration/RegistrationScreen";
+import Toast from "@/components/Toast";
+import Modal from "@/components/Modal";
 
 export default {
   name: "Screen",
-  components: {RegistrationScreen, HomeScreen, IntercomScreen, MessagingScreen, DateTime, UserStatus},
+  components: {Modal, Toast, RegistrationScreen, HomeScreen, IntercomScreen, MessagingScreen, DateTime, UserStatus},
   data() {
     return {
       screens: {
@@ -65,7 +68,11 @@ export default {
     }
   },
   methods: {
-    setScreen: function (screen) {
+    setScreen: function (screen, disallowDoNotDisturb) {
+      if (disallowDoNotDisturb && this.$global.user.status === "DO_NOT_DISTURB") {
+        alert("DND");
+        return;
+      }
       this.activeScreen = screen;
     },
 

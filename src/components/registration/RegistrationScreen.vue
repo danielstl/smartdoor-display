@@ -44,7 +44,7 @@ export default {
 
     if (code) {
       this.autoPair = true;
-      this.attemptToJoin(code); //we already have a saved room code
+      this.attemptToJoin(code, false); //we already have a saved room code
     }
   },
   sockets: {
@@ -62,14 +62,14 @@ export default {
     }
   },
   methods: {
-    attemptToJoin: function (content) {
-      this.$socket.emit("join_room", content);
+    attemptToJoin: function (content, newPairing) {
+      this.$socket.emit("join_room", content, newPairing);
     },
     promptForCode: function() {
       let res = prompt("Please enter a Door ID, which you can find in DoorLink Management > Device");
 
       if (res) {
-        this.attemptToJoin(res);
+        this.attemptToJoin(res, true);
       }
     }
   }
