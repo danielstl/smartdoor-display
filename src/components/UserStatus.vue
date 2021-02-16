@@ -1,6 +1,6 @@
 <template>
   <div id="user-root">
-    <img id="user-icon" :src="this.user.profileImage"/>
+    <DynamicImage id="user-icon" :src="this.user.profileImage"/>
     <div>
       <div id="user-name">{{ this.user.name }}</div>
       <div id="user-status">
@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import DynamicImage from "@/components/DynamicImage";
 const statusMap = {
   AVAILABLE: {
     name: "Available",
@@ -31,6 +32,7 @@ const statusMap = {
 
 export default {
   name: "UserStatus",
+  components: {DynamicImage},
   data() {
     return {
       user: {

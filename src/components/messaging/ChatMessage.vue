@@ -17,7 +17,7 @@ export default {
   computed: {
     formattedTime: function () {
       let date = new Date();
-      date.setUTCMilliseconds(this.message.timestamp);
+      date.setTime(this.message.timestamp);
       return date.toLocaleTimeString("en-GB", {hour:"2-digit", minute: "2-digit", hour12: false});
     }
   }

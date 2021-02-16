@@ -7,7 +7,9 @@
         <DateTime/>
       </header>
       <main>
-        <component :is="this.activeComponent"/>
+        <transition name="page-switch" mode="out-in">
+          <component :is="this.activeComponent"/>
+        </transition>
       </main>
       <nav>
         <ul>
@@ -18,7 +20,7 @@
           <li :class="{'selected-item': this.activeScreen === 'messages'}" @click="setScreen('messages')"><span
               class="material-icons">chat</span></li>
         </ul>
-        <Toast v-if="false"/>
+        <Toast v-show="toast != null" :caption="toast"/>
       </nav>
     </div>
   </div>
@@ -44,6 +46,7 @@ export default {
         intercom: "IntercomScreen",
         messages: "MessagingScreen"
       },
+      toast: null,
       requiresRegistration: true,
       roomId: null,
       activeScreen: "home",
@@ -55,6 +58,8 @@ export default {
     //let screenData = await fetch("http://localhost:3000/fetch-data/user1", {mode: "no-cors"});
 
     //store.data = Object.assign({}, store.data, screenData);
+
+    this.$global.pushToast = this.pushToast;
   },
   sockets: {
     background_update: function (url) {
@@ -70,7 +75,7 @@ export default {
   methods: {
     setScreen: function (screen, disallowDoNotDisturb) {
       if (disallowDoNotDisturb && this.$global.user.status === "DO_NOT_DISTURB") {
-        alert("DND");
+        this.pushToast("The Intercom feature cannot be used whilst Do Not Disturb is active");
         return;
       }
       this.activeScreen = screen;
@@ -83,8 +88,14 @@ export default {
       this.requiresRegistration = false;
 
       localStorage.roomCode = code; //save the code!
+      this.$global.roomId = code;
 
       this.$socket.emit("get_background");
+    },
+    pushToast: function(message) {
+      this.toast = message;
+
+      setTimeout(() => this.toast = null, 4000);
     }
   }
 }
@@ -174,5 +185,29 @@ nav {
 ::-webkit-scrollbar {
   width: 0;
   background: transparent;
+}
+
+input[type=text], select, button, input[type=submit], input[type="file"]::-webkit-file-upload-button {
+  background-color: white;
+  border: 1px solid #333;
+  border-radius: 2px;
+  padding: 0.4em;
+  color: black;
+  outline: none;
+  font-family: "Roboto", "Segoe UI", "sans-serif";
+
+  transition: background-color 0.25s;
+}
+
+button:hover {
+  background-color: #f1f1f1;
+}
+
+.page-switch-enter-active, .page-switch-leave-active {
+  transition: all 0.2s ease-in-out;
+}
+
+.page-switch-enter, .page-switch-leave-to {
+  opacity: 0;
 }
 </style>

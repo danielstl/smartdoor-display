@@ -14,7 +14,7 @@ export default {
   components: {WhiteboardWidget, PinnedMessagesWidget, ScheduleWidget},
   data() {
     return {
-      widgets: ["WhiteboardWidget", "PinnedMessagesWidget", "ScheduleWidget"],
+      widgets: [],
     }
   },
   sockets: {

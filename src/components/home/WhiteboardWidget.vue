@@ -1,18 +1,25 @@
 <template>
   <div class="widget-base whiteboard-base">
-    <div id="whiteboard-title">Draw a quick message...</div>
-    <canvas id="whiteboard" @touchmove.prevent="moveDraw" @mousemove.prevent="moveDraw" @touchend.prevent="stopDraw"
-            @mouseup.prevent="stopDraw"
-            @touchstart.prevent="draw" @mouseenter.prevent="draw" @mousedown.prevent="draw"/>
+    <div id="whiteboard-title">Send a quick doodle...</div>
+    <div id="canvas-wrapper">
+      <canvas id="whiteboard" @touchmove.prevent="moveDraw" @mousemove.prevent="moveDraw" @touchend.prevent="stopDraw"
+              @mouseup.prevent="stopDraw"
+              @touchstart.prevent="draw" @mouseenter.prevent="draw" @mousedown.prevent="draw" :class="{sent: this.recentlySent}"/>
+    </div>
     <div id="whiteboard-options">
       <ul>
+        <li>
+          <button @click.prevent="clearCanvas" :disabled="recentlySent" class="colour">
+            <span class="material-icons">delete</span>
+          </button>
+        </li>
         <li class="colour-item" v-for="(c, i) in colours" :key="c">
           <button @click.prevent="selectColour(i)" :style="{'background-color': c}"
                   :class="{'colour': 1, 'selected': i === selectedColour}"></button>
         </li>
         <li>
-          <button @click.prevent="clearCanvas" class="colour">
-          <span class="material-icons">delete</span>
+          <button @click.prevent="send" class="colour">
+            <span class="material-icons">send</span>
           </button>
         </li>
       </ul>
@@ -38,37 +45,47 @@ export default {
         "#00ffff",
         "#ff00ff"
       ],
-      selectedColour: 0
+      selectedColour: 0,
+      uploading: false,
+      emptyCanvas: true,
+      recentlySent: false
     }
   },
   mounted() {
     this.canvas = document.getElementById("whiteboard");
     this.context = this.canvas.getContext("2d");
 
-    this.canvas.width = this.canvas.offsetWidth;
-    this.canvas.height = this.canvas.offsetHeight;
+    setTimeout(this.resize, 1000);
 
-    let rect = this.canvas.getBoundingClientRect();
-
-// increase the actual size of our canvas
-    this.canvas.width = rect.width * devicePixelRatio;
-    this.canvas.height = rect.height * devicePixelRatio;
-
-// ensure all drawing operations are scaled
-    this.context.scale(devicePixelRatio, devicePixelRatio);
-
-// scale everything down using CSS
-    this.canvas.style.width = rect.width + 'px';
-    this.canvas.style.height = rect.height + 'px';
+    window.addEventListener("resize", this.resize);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.resize);
   },
   methods: {
     draw: function (e) { //setPosition
       //alert("draw " + JSON.stringify(e));
       this.pos = [(e.touches ? e.touches[0].clientX : e.clientX) - this.canvas.offsetLeft, (e.touches ? e.touches[0].clientY : e.clientY) - this.canvas.offsetTop];
     },
+    resize() {
+      console.log("resize");
+
+      this.canvas.width = this.canvas.offsetWidth;
+      this.canvas.height = this.canvas.offsetHeight;
+
+      let rect = this.canvas.getBoundingClientRect();
+
+      this.canvas.width = rect.width * devicePixelRatio;
+      this.canvas.height = rect.height * devicePixelRatio;
+
+      this.context.scale(devicePixelRatio, devicePixelRatio);
+
+      //this.canvas.style.width = rect.width + 'px';
+      //this.canvas.style.height = rect.height + 'px';
+    },
     moveDraw: function (e) { //draw
       //alert("move" + JSON.stringify(e));
-      if (e.buttons !== undefined && e.buttons !== 1) return;
+      if (e.buttons !== undefined && e.buttons !== 1 || this.uploading || this.recentlySent) return;
 
       let ctx = this.context;
 
@@ -83,6 +100,8 @@ export default {
       ctx.lineTo(this.pos[0], this.pos[1]); // to
 
       ctx.stroke(); // draw it!
+
+      this.emptyCanvas = false;
     },
     stopDraw: function () {
 
@@ -92,6 +111,38 @@ export default {
     },
     clearCanvas: function () {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      this.emptyCanvas = true;
+    },
+    send() {
+      if (this.emptyCanvas) {
+        return;
+      }
+
+      this.uploading = true;
+
+      this.canvas.toBlob(blob => {
+
+        let form = new FormData();
+        form.append("image", new File([blob], "doodle.png", {type: "image/png"}));
+
+        fetch("https://doorlink.xyz/upload/note-image/" + this.$global.roomId, {
+          method: "POST",
+          body: form
+        })
+            .then(res => res.json())
+            .then(res => {
+              this.$socket.emit("add_doodle", res.url);
+
+              this.recentlySent = true;
+
+              setTimeout(() => {
+                this.recentlySent = false;
+                this.clearCanvas();
+              }, 800);
+            })
+            .finally(() => this.uploading = false);
+      }, "image/png");
     }
   }
 }
@@ -109,10 +160,24 @@ export default {
   font-weight: 600;
 }
 
-#whiteboard {
+#canvas-wrapper {
   flex: 1;
   width: 100%;
   height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: auto;
+}
+
+#whiteboard {
+  width: 100%;
+  height: 100%;
+}
+
+#uploading-overlay {
+  position: relative;
+  top: 0;
+  left: 0;
 }
 
 #whiteboard-options > ul {
@@ -124,8 +189,8 @@ export default {
 
 .colour {
   border-radius: 50%;
-  width: 2em;
-  height: 2em;
+  width: 2.5em;
+  height: 2.5em;
   border: 2px solid transparent;
   transition: all 0.1s;
   padding: 0;
@@ -137,6 +202,27 @@ export default {
 .selected {
   border: 2px solid white;
   box-shadow: 0 0 0 2px #303030;
+}
+
+.sent {
+  animation: doodle-send 1s cubic-bezier(.17,.67,.12,1);
+}
+
+@keyframes doodle-send {
+
+  0% {
+    opacity: 1;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  90% {
+    fill: blue;
+    opacity: 0;
+    background-color: #868686;
+    transform: scale(0.8);
+  }
 }
 
 button:focus {

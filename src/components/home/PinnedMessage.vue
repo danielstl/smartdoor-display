@@ -1,13 +1,15 @@
 <template>
   <div class="pinned-message widget-base">
-    <img v-if="this.note.image" :src="this.note.image"/>
+    <DynamicImage v-if="this.note.image" :src="this.note.image"/>
     <div v-if="this.note.text">{{ this.note.text }}</div>
   </div>
 </template>
 
 <script>
+import DynamicImage from "@/components/DynamicImage";
 export default {
   name: "PinnedMessage",
+  components: {DynamicImage},
   props: {
     note: Object
   }

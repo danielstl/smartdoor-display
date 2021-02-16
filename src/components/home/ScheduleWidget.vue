@@ -20,7 +20,7 @@
 
 <script>
 import EventDetailsOverlay from "@/components/home/EventDetailsOverlay";
-const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function mapEpochToTime(epoch) {
   let date = new Date(0);
@@ -35,13 +35,20 @@ export default {
   data() {
     return {
       schedule: [],
-      focusedEvent: null
+      focusedEvent: null,
+      calUpdateHandle: 0
     }
   },
   methods: {
     showEventDetails(event) {
       this.focusedEvent = event;
+    },
+    getCalendar() {
+      this.$socket.emit("get_calendar");
     }
+  },
+  beforeDestroy() {
+    clearInterval(this.calUpdateHandle);
   },
   sockets: {
     calendar_update: function (update) {
@@ -49,10 +56,7 @@ export default {
 
         let flatEvents = [];
 
-        console.log("??", update);
-
         for (let calendar of update) {
-          console.log("!!!!!", calendar);
           for (let event of calendar.events) {
             flatEvents.push({
               colour: calendar.colour,
@@ -88,6 +92,7 @@ export default {
               colour: e.colour,
               start: mapEpochToTime(e.start),
               startEpoch: e.start,
+              endEpoch: e.end,
               end: mapEpochToTime(e.end)
             }
           });
@@ -96,7 +101,7 @@ export default {
             newSchedule.push(
                 {
                   day: now.getDate(), //day of month
-                  weekday: weekdays[now.getDay() - 1], //day of week
+                  weekday: weekdays[now.getDay()], //day of week
                   events: todaysEvents
                 }
             );
@@ -113,8 +118,9 @@ export default {
     }
   },
   mounted() {
-    this.$socket.emit("get_calendar");
-    //fetch("http://localhost:3000/schedule", {mode: "no-cors"}).then(r => console.log(r)).then(r => r.json()).then(r => console.log(r));//.then(r => this.schedule = r);
+    this.calUpdateHandle = setInterval(this.getCalendar, 5 * 60 * 1000); //every 5 min
+
+    this.getCalendar();
   }
 }
 </script>
