@@ -19,7 +19,7 @@ export default {
 .toast {
   position: fixed;
   width: 100%;
-  background-color: #3b3b3b;
+  background-color: #292929;
   left: 0;
   bottom: 0;
   padding: 0.8em;
@@ -27,6 +27,8 @@ export default {
   color: white;
   overflow: hidden;
   text-align: center;
+
+  z-index: 99;
 }
 
 .slide-up-enter-active, .slide-up-leave-active {

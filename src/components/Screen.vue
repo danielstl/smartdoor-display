@@ -1,5 +1,6 @@
 <template>
   <div id="root-overlay" :style="{backgroundImage: 'url(' + this.backgroundUrl + ')'}">
+    <Toast v-show="this.toastVisible" :caption="toast"/>
     <RegistrationScreen v-if="requiresRegistration" @room-joined="roomJoined"/>
     <div id="root" v-else>
       <header>
@@ -17,10 +18,9 @@
               class="material-icons">home</span></li>
           <li :class="{'selected-item': this.activeScreen === 'intercom'}" @click="setScreen('intercom', true)"><span
               class="material-icons">videocam</span></li>
-          <li :class="{'selected-item': this.activeScreen === 'messages'}" @click="setScreen('messages')"><span
+          <li :class="{'selected-item': this.activeScreen === 'messages'}" @click="setScreen('messages', true)"><span
               class="material-icons">chat</span></li>
         </ul>
-        <Toast v-show="toast != null" :caption="toast"/>
       </nav>
     </div>
   </div>
@@ -47,10 +47,13 @@ export default {
         messages: "MessagingScreen"
       },
       toast: null,
+      toastVisible: false,
       requiresRegistration: true,
       roomId: null,
       activeScreen: "home",
-      backgroundUrl: null
+      backgroundUrl: null,
+      initialConnection: false,
+      invalidationReconnect: false
     }
   },
   async mounted() {
@@ -62,40 +65,67 @@ export default {
     this.$global.pushToast = this.pushToast;
   },
   sockets: {
-    background_update: function (url) {
+    background_update(url) {
       this.backgroundUrl = url;
       console.log(url);
+    },
+    room_invalidate() { //server has invalidated our room code and disconnected us...
+      delete localStorage.displayRoomCode;
+      this.roomId = null;
+      this.requiresRegistration = true;
+      this.invalidationReconnect = true;
+
+      this.pushToast("This device has been disconnected from the system")
+    },
+    disconnect(reason) {
+      if(reason === 'io server disconnect') {
+        this.$socket.connect();
+      }
+
+      if (this.initialConnection && !this.invalidationReconnect) {
+        this.pushToast("Disconnected from server, reconnecting...")
+      }
+    },
+    connect() {
+      if (this.initialConnection && !this.invalidationReconnect) { //already connected before, we must have been disconnected...
+        this.requiresRegistration = true;
+        this.pushToast("Reconnected to server")
+      }
+
+      this.invalidationReconnect = false;
+      this.initialConnection = true;
     }
   },
   computed: {
-    activeComponent: function () {
+    activeComponent() {
       return this.screens[this.activeScreen];
     }
   },
   methods: {
-    setScreen: function (screen, disallowDoNotDisturb) {
+    setScreen(screen, disallowDoNotDisturb) {
       if (disallowDoNotDisturb && this.$global.user.status === "DO_NOT_DISTURB") {
-        this.pushToast("The Intercom feature cannot be used whilst Do Not Disturb is active");
+        this.pushToast("This feature cannot be used whilst Do Not Disturb is active");
         return;
       }
       this.activeScreen = screen;
     },
 
-    roomJoined: function (code) {
+    roomJoined(code) {
       //todo: store in http storage
 
       this.roomId = code;
       this.requiresRegistration = false;
 
-      localStorage.roomCode = code; //save the code!
+      localStorage.displayRoomCode = code; //save the code!
       this.$global.roomId = code;
 
       this.$socket.emit("get_background");
     },
-    pushToast: function(message) {
+    pushToast(message) {
       this.toast = message;
+      this.toastVisible = true;
 
-      setTimeout(() => this.toast = null, 4000);
+      setTimeout(() => this.toastVisible = false, 4000);
     }
   }
 }
@@ -141,7 +171,7 @@ nav > ul > li > span {
 }
 
 #root, #root-overlay {
-  font-family: "Roboto", "Segoe UI", "sans-serif";
+  font-family: "Roboto", "Segoe UI", "Helvetica", "sans-serif";
   display: flex;
   flex-flow: column;
   height: 100vh;
@@ -194,7 +224,7 @@ input[type=text], select, button, input[type=submit], input[type="file"]::-webki
   padding: 0.4em;
   color: black;
   outline: none;
-  font-family: "Roboto", "Segoe UI", "sans-serif";
+  font-family: "Roboto", "Segoe UI", "Helvetica", "sans-serif";
 
   transition: background-color 0.25s;
 }

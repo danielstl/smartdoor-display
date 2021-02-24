@@ -1,7 +1,10 @@
 <template>
   <div class="widget-base" id="schedule-widget">
     <EventDetailsOverlay v-if="focusedEvent !== null" :event="focusedEvent" @close="showEventDetails(null)"/>
-    <ul>
+    <div id="no-upcoming" v-if="schedule.length === 0">
+      <div>No upcoming events</div>
+    </div>
+    <ul v-else>
       <li class="schedule-day" v-for="day in schedule" :key="day.day">
         <div class="day-text">
           <span class="day">{{ day.day }}</span>
@@ -180,5 +183,12 @@ ul {
 
 #schedule-widget {
   overflow-y: scroll;
+}
+
+#no-upcoming {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

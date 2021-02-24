@@ -18,7 +18,7 @@ export default {
 
 <style scoped>
 .pinned-message {
-  background-color: yellow;
+  background-color: #ffff88;
   padding: 0.5em;
 }
 

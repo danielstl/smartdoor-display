@@ -140,15 +140,16 @@ export default {
     endCall() {
       this.rtc.close();
 
-      if (this.pendingCallRequestId && this.callInProgress) {
+      if (this.pendingCallRequestId && !this.callInProgress) {
+        this.$socket.emit("cancel_call_request", this.pendingCallRequestId);
 
+      } else if (this.pendingCallRequestId && this.callInProgress) {
         this.$socket.emit("end_intercom_call", this.pendingCallRequestId);
-
-        this.pendingCallRequestId = null;
-        this.callInProgress = false;
-
         this.$global.pushToast("Intercom call has been ended");
       }
+
+      this.pendingCallRequestId = null;
+      this.callInProgress = false;
 
       document.getElementById("cam-feed").srcObject = null;
       document.getElementById("received-cam-feed").srcObject = null;

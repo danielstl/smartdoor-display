@@ -4,6 +4,7 @@
       <div class="header">Connecting...</div>
     </template>
     <template v-else-if="!pairComplete">
+      <img alt="DoorLink logo" id="logo" src="https://doorlink.xyz/display/icons/256.png"/>
       <div class="header">Welcome to DoorLink</div>
       <div>To get started, you need to pair this display with the DoorLink Management application</div>
       <div class="subtitle">Visit the Device page, and then scan the QR code using the camera view below</div>
@@ -40,7 +41,7 @@ export default {
     }
   },
   beforeMount() {
-    let code = localStorage.roomCode;
+    let code = localStorage.displayRoomCode;
 
     if (code) {
       this.autoPair = true;
@@ -56,9 +57,8 @@ export default {
       }, this.autoPair ? 0 : 3000);
     },
     invalid_room_code: function () {
+      this.$global.pushToast(this.autoPair ? "The previous code used is now invalid, please pair the display again" : "Invalid room code, please try again")
       this.autoPair = false;
-      //todo
-      alert("Invalid room code!");
     }
   },
   methods: {
@@ -79,7 +79,7 @@ export default {
 <style scoped>
 #registration-root {
   position: fixed;
-  background-color: #262626;
+  background-color: #3b3b3b;
   color: #ececec;
   width: 100%;
   height: 100%;
@@ -92,9 +92,15 @@ export default {
   text-align: center;
 }
 
+#logo {
+  width: 64px;
+  height: 64px;
+}
+
 .header {
-  font-size: xx-large;
-  font-weight: 500;
+  font-size: x-large;
+  font-weight: 600;
+  margin-top: 0.6em;
   margin-bottom: 0.25em;
 }
 
@@ -142,7 +148,7 @@ export default {
   border-radius: 10px;
   padding: 0.75em;
   color: black;
-  font-family: "Roboto", "Segoe UI", "sans-serif";
+  font-family: "Roboto", "Segoe UI", "Helvetica", "sans-serif";
 
   transition: all 0.2s ease-in-out;
 }

@@ -3,7 +3,7 @@
     <div id="whiteboard-title">Send a quick doodle...</div>
     <div id="canvas-wrapper">
       <canvas id="whiteboard" @touchmove.prevent="moveDraw" @mousemove.prevent="moveDraw" @touchend.prevent="stopDraw"
-              @mouseup.prevent="stopDraw"
+              @mouseup.prevent="stopDraw" @focus="resize"
               @touchstart.prevent="draw" @mouseenter.prevent="draw" @mousedown.prevent="draw" :class="{sent: this.recentlySent}"/>
     </div>
     <div id="whiteboard-options">

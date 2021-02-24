@@ -84,7 +84,7 @@ li:not(:last-child) {
 }
 
 #message-box {
-  font-family: "Roboto", "Segoe UI", "sans-serif";
+  font-family: "Roboto", "Segoe UI", "Helvetica", "sans-serif";
   padding: 0.8em;
   font-size: large;
   border: 2px solid #a0a0a0;
